@@ -5,7 +5,7 @@
 
 ## Prerequisites
 
-請事先安裝好python3以及SQL database
+請事先安裝好python3以及確認系統上有sqlite3
 - [python3](https://www.python.org/downloads/)
 - [SQLite)]()
 
@@ -49,7 +49,6 @@ $ flask db upgrade
 
 #### 啟動
 ```shell
-$ gunicorn wsgi:app
 $ gunicorn --bind=0.0.0.0:5000 wsgi:app # 指定host以及port
 ```
 
