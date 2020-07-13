@@ -52,7 +52,6 @@ def getTop3Alias():
         .group_by(Statistic.alias)\
         .order_by(Statistic.count.desc())\
         .limit(3).subquery()
-    print()
     top3HitCount = db.session\
         .query(
             (
@@ -96,10 +95,8 @@ def getHitCount(token):
 @short_url.route('/hit-count-group-by-date')
 def getHitCountGroupByDate():
     date = db.session().query(Statistic.date).group_by(Statistic.date).all()
-    print(date)
     result = []
     for d in date:
-        print(d[0])
         subq = db.session().query()
         values = db.session()\
             .query(ShortUrl)\
@@ -113,10 +110,9 @@ def getHitCountGroupByDate():
             .join(Statistic)\
             .filter_by(date=d[0])\
             .order_by(Statistic.count).all()
-        print(values)
         values = [vaule._asdict() for vaule in values]
         data = {
-            'Date': d[0],
+            'Date': d[0].strftime("%Y-%m-%d"),
             'Values': values
         }
         result.append(data)

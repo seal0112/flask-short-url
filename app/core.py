@@ -1,4 +1,5 @@
 from flask import jsonify, make_response
+import os
 import hashlib
 import base62
 import datetime
@@ -12,6 +13,7 @@ def getShort(url):
 
 
 def createShortUrl(origin, alias):
+    print(origin, alias)
     shortUrl = db.session.query(ShortUrl).filter_by(
         alias=alias).one_or_none()
     if shortUrl is None:
@@ -26,9 +28,16 @@ def createShortUrl(origin, alias):
             print("{}: {}".format(alias, ex))
             return make_response(json.dumps('error'), 500)
         else:
-            return make_response(json.dumps('create'), 201)
+            shortUrl = db.session.query(
+                (
+                    'http://'+os.getenv('IP')+
+                    ':'+os.getenv('PORT')+'/'+ShortUrl.alias
+                ).label('alias'),
+                ShortUrl.origin).filter_by(
+                alias=alias).one()
+            return make_response(json.dumps(shortUrl._asdict()), 201)
     else:
-        return make_response(json.dumps('Ok'), 200)
+        return make_response(json.dumps('error'), 500)
 
 
 def addRedirectHitCount(alias):
