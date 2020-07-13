@@ -1,6 +1,6 @@
 # Short Url
 
-## Crawler and Back-End for Taiwan stocks
+## short-url service
 使用flask以及sqlite製作的短網址服務
 
 ## Prerequisites
