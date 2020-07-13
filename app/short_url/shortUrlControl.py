@@ -10,7 +10,8 @@ from sqlalchemy.sql import func
 
 
 @short_url.route('/', methods=['GET', 'POST'])
-def main():
+@short_url.route('/created-url', methods=['GET', 'POST'])
+def createdUrl():
     if request.method == 'POST':
         data = json.loads(request.data)
         origin = data['origin']
@@ -55,7 +56,7 @@ def getTop3Alias():
     top3HitCount = db.session\
         .query(
             (
-                'http://'+os.getenv('IP')+
+                'http://'+os.getenv('IP') +
                 ':'+os.getenv('PORT')+'/'+ShortUrl.alias
             ).label('alias'),
             ShortUrl.origin,
@@ -74,12 +75,12 @@ def getHitCount(token):
             Statistic.alias.label('alias'),
             func.sum(Statistic.count).label('count'))\
         .group_by(Statistic.alias)\
-        .having(Statistic.alias==token).subquery()
+        .having(Statistic.alias == token).subquery()
 
     hitCount = db.session\
         .query(
             (
-                'http://'+os.getenv('IP')+
+                'http://'+os.getenv('IP') +
                 ':'+os.getenv('PORT')+'/'+ShortUrl.alias
             ).label('alias'),
             ShortUrl.origin,
@@ -89,7 +90,9 @@ def getHitCount(token):
         hitCount = hitCount._asdict()
         return jsonify(hitCount)
     else:
-        return jsonify(hitCount)
+        return make_response(
+            json.dumps(
+                "Couldn't find hit count record for {}".format(token)), 404)
 
 
 @short_url.route('/hit-count-group-by-date')
@@ -102,7 +105,7 @@ def getHitCountGroupByDate():
             .query(ShortUrl)\
             .with_entities(
                 (
-                    'http://'+os.getenv('IP')+
+                    'http://'+os.getenv('IP') +
                     ':'+os.getenv('PORT')+'/'+ShortUrl.alias
                 ).label('alias'),
                 Statistic.count,
